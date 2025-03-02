@@ -16,18 +16,13 @@ export async function execCalibre(
   args: string[] = [],
   options: CalibreOptions = {}
 ): Promise<string> {
-  const { libraryPath, calibreBin = "calibredb", forMachine = false } = options;
+  const { libraryPath, calibreBin = "calibredb" } = options;
   
   const execArgs: string[] = [command];
   
   // Add library path if provided
   if (libraryPath) {
     execArgs.push("--library-path", libraryPath);
-  }
-  
-  // Add for-machine flag if requested
-  if (forMachine) {
-    execArgs.push("--for-machine");
   }
   
   // Add all other arguments
@@ -68,13 +63,8 @@ export async function execCalibreJson<T>(
   args: string[] = [],
   options: CalibreOptions = {}
 ): Promise<T> {
-  // Force forMachine to true for JSON output
-  const jsonOptions: CalibreOptions = {
-    ...options,
-    forMachine: true
-  };
-  
-  const output = await execCalibre(command, args, jsonOptions);
+  args.push("--for-machine");
+  const output = await execCalibre(command, args, options);
   
   try {
     return JSON.parse(output) as T;
@@ -100,16 +90,12 @@ export function execCalibreStream(
   args: string[] = [],
   options: CalibreOptions = {}
 ) {
-  const { libraryPath, calibreBin = "calibredb", forMachine = false } = options;
+  const { libraryPath, calibreBin = "calibredb" } = options;
   
   const execArgs: string[] = [command];
   
   if (libraryPath) {
     execArgs.push("--library-path", libraryPath);
-  }
-  
-  if (forMachine) {
-    execArgs.push("--for-machine");
   }
   
   execArgs.push(...args);

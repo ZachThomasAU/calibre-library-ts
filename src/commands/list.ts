@@ -33,10 +33,7 @@ export async function list(options: ListOptions = {}): Promise<Book[] | BookMini
   }
   
   // Always use JSON (forMachine) output for easier parsing
-  return execCalibreJson<Book[] | BookMinimal[]>("list", args, {
-    ...options,
-    forMachine: true
-  });
+  return execCalibreJson<Book[] | BookMinimal[]>("list", args, options);
 }
 
 /**

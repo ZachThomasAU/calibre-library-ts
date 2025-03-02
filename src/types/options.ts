@@ -1,3 +1,8 @@
+type Field = "author_sort" | "authors" | "comments" | "cover" | "formats"
+  | "identifiers" | "isbn" | "languages" | "last_modified" | "pubdate"
+  | "publisher" | "rating" | "series" | "series_index" | "size" | "tags"
+  | "template" | "timestamp" | "title" | "uuid" | "all"
+
 /**
  * Base configuration options for all calibredb commands
  */
@@ -13,12 +18,6 @@ export interface CalibreOptions {
    * @default "calibredb"
    */
   calibreBin?: string;
-  
-  /**
-   * Whether to request machine-readable output (JSON)
-   * @default false
-   */
-  forMachine?: boolean;
   
   /**
    * Whether to use streaming mode for the command output
@@ -39,9 +38,22 @@ export interface CalibreOptions {
  */
 export interface ListOptions extends CalibreOptions {
   /**
-   * Fields to include in the output
+   * Fields to include in the output. The special field "all" can be used to
+   * select all fields
+   * @default ["title", "authors"]
    */
-  fields?: string[];
+  fields?: Field[];
+  
+  /**
+   * Field to sort by
+   */
+  sortBy?: string | string[];
+  
+  /**
+   * Ascending (ASC) or descending (DESC) sort order
+   * @default "DESC"
+   */
+  sortOrder?: "ASC" | "DESC";
   
   /**
    * Search expression to filter books
@@ -52,16 +64,12 @@ export interface ListOptions extends CalibreOptions {
    * Maximum number of books to return
    */
   limit?: number;
-  
+
   /**
-   * Ascending (ASC) or descending (DESC) sort order
+   * Whether to request machine-readable output (JSON)
+   * @default false
    */
-  sortOrder?: "ASC" | "DESC";
-  
-  /**
-   * Field to sort by
-   */
-  sortBy?: string;
+  forMachine?: boolean;
 }
 
 /**
@@ -69,44 +77,48 @@ export interface ListOptions extends CalibreOptions {
  */
 export interface AddOptions extends CalibreOptions {
   /**
-   * Whether to add formats to existing records based on identifier
+   * Whether to allow duplicate books. Comparison is done based on book titles
+   * and authors. NOTE: `automerge` takes precedence.
    * @default false
    */
-  addToExisting?: boolean;
-  
+  allowDuplicates?: boolean;
+
   /**
-   * Whether to ignore duplicate books
-   * @default false
+   * If books with similar titles and authors are found, merge the incoming
+   * formats (files) automatically into existing book records. A value of
+   * "ignore" means duplicate formats are discarded. A value of "overwrite"
+   * means duplicate formats in the library are overwritten with the newly added
+   * files. A value of "new_record" means duplicate formats are placed into a
+   * new book record.
+   * @default "ignore"
    */
-  ignoreDuplicates?: boolean;
+  automerge?: "ignore" | "overwrite" | "new_record";
   
   /**
-   * Whether to recurse through directories
-   * @default false
-   */
-  recursive?: boolean;
-  
-  /**
-   * Whether to add books with matching ISBNs to existing book records
-   * @default false
-   */
-  duplicateIsbn?: boolean;
-  
-  /**
-   * Whether to add empty book records
+   * Whether to add empty book records (with no formats)
    * @default false
    */
   empty?: boolean;
   
   /**
-   * Author string to use for all added books
-   */
-  author?: string;
-  
-  /**
    * Title string to use for all added books
    */
   title?: string;
+  
+  /**
+   * Author string to use for all added books
+   */
+  author?: string;
+
+  /**
+   * ISBN string to use for all added books
+   */
+  isbn?: string;
+  
+  /**
+   * Identifier for added books (like isbn:xxx, doi:xxx)
+   */
+  identifiers?: string[];
   
   /**
    * Tags to add to added books
@@ -122,11 +134,25 @@ export interface AddOptions extends CalibreOptions {
    * Series index for added books
    */
   seriesIndex?: number;
+
+  /**
+   * List of languages (best to use ISO639 language codes, though some language
+   * names may also be recognized)
+   */
+  languages?: string[];
   
   /**
-   * Identifier for added books (like isbn:xxx, doi:xxx)
+   * Whether to recurse through directories
+   * @default false
    */
-  identifier?: string;
+  recursive?: boolean;
+
+  /**
+   * Assume that each folder has only a single logical book and that all files
+   * in it are different e-book formats of that book
+   * @default false
+   */
+  oneBookPerDirectory?: boolean;
 }
 
 /**

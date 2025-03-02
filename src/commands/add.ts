@@ -1,4 +1,4 @@
-import { execCalibreJson, execCalibreStream } from "../core/exec";
+import { execCalibre, execCalibreStream } from "../core/exec";
 import type { AddOptions } from "../types/options";
 
 /**
@@ -12,23 +12,23 @@ export async function add(
   paths: string[],
   options: AddOptions = {}
 ): Promise<number[]> {
-  const args: string[] = [...paths];
+  const args: string[] = [];
   
   // Add command-specific options
-  if (options.addToExisting) {
-    args.push("--add-to-existing");
+  if (options.automerge) {
+    args.push("--automerge", options.automerge);
   }
   
-  if (options.ignoreDuplicates) {
-    args.push("--ignore-duplicates");
+  if (options.allowDuplicates) {
+    args.push("--duplicates");
   }
   
   if (options.recursive) {
-    args.push("--recursive");
+    args.push("--recurse");
   }
-  
-  if (options.duplicateIsbn) {
-    args.push("--duplicate-isbn");
+
+  if (options.oneBookPerDirectory) {
+    args.push("--one-book-per-directory");
   }
   
   if (options.empty) {
@@ -54,23 +54,45 @@ export async function add(
   if (options.seriesIndex !== undefined) {
     args.push("--series-index", options.seriesIndex.toString());
   }
-  
-  if (options.identifier) {
-    args.push("--identifier", options.identifier);
+
+  if (options.isbn) {
+    args.push("--isbn", options.isbn);
   }
+  
+  if (options.identifiers) {
+    options.identifiers.forEach((identifier) => args.push("--identifier", identifier));
+  }
+
+  if (options.languages) {
+    args.push("--languages", options.languages.join(","));
+  }
+
+  // Append paths to the end of command, after all options
+  args.push(...paths);
   
   if (options.stream) {
     // Return the child process for streaming
     return execCalibreStream("add", args, options) as unknown as Promise<number[]>;
   }
+
+  const output = await execCalibre("add", args, options);
   
-  // Use JSON output for easier parsing
-  const result = await execCalibreJson<{ book_ids: number[] }>("add", args, {
-    ...options,
-    forMachine: true
-  });
+  // Parse the book IDs from the output text
+  // Typical output: "Added book ids: 1, 2, 3"
+  const match = output.match(/Added book ids?: (.+)/i);
   
-  return result.book_ids;
+  if (match && match[1]) {
+    // Extract numbers and convert to integers
+    return match[1]
+      .split(",")
+      .map(id => id.trim())
+      .filter(id => id.length > 0)
+      .map(id => parseInt(id, 10))
+      .filter(id => !isNaN(id));
+  }
+  
+  // No IDs found in the output, possibly because of --ignore-duplicates
+  return [];
 }
 
 /**
