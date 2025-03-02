@@ -25,8 +25,11 @@ export async function list(options: ListOptions = {}): Promise<Book[] | BookMini
   }
   
   if (options.sortBy) {
-    const sortDirection = options.sortOrder === "DESC" ? "-" : "";
-    args.push("--sort-by", `${sortDirection}${options.sortBy}`);
+    args.push("--sort-by", `${options.sortBy}`);
+  }
+
+  if (options.sortOrder) {
+    if (options.sortOrder === "ASC") args.push("--ascending");
   }
   
   // Always use JSON (forMachine) output for easier parsing
