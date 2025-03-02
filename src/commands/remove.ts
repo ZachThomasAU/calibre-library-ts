@@ -63,13 +63,8 @@ export async function removePermanently(
  */
 export async function removeBySearch(
   searchExpression: string,
-  options: RemoveOptions = {}
+  _options: RemoveOptions = {}
 ): Promise<void> {
-  const args: string[] = ["--search", searchExpression];
-  
-  if (options.permanent) {
-    args.push("--permanent");
-  }
-  
-  await execCalibre("remove", args, options);
+  // TODO: After implementing search
+  throw new Error("Not Implemented!");
 }

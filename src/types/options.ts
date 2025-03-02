@@ -171,9 +171,9 @@ export interface RemoveOptions extends CalibreOptions {
  */
 export interface SearchOptions extends CalibreOptions {
   /**
-   * Fields to include in the output
+   * Maximum number of books to return
    */
-  fields?: string[];
+  limit?: number;
 }
 
 /**
@@ -182,9 +182,15 @@ export interface SearchOptions extends CalibreOptions {
 export interface AddFormatOptions extends CalibreOptions {
   /**
    * Whether to replace existing format
-   * @default false
+   * @default true
    */
   replace?: boolean;
+
+  /**
+   * Add the file as an extra data file to the book, not an ebook format
+   * @default true
+   */
+  asExtraDataFile?: boolean;
 }
 
 /**
@@ -192,10 +198,10 @@ export interface AddFormatOptions extends CalibreOptions {
  */
 export interface ShowMetadataOptions extends CalibreOptions {
   /**
-   * Whether to include all metadata fields
+   * Print metadata in OPF form (XML)
    * @default false
    */
-  all?: boolean;
+  asOpf?: boolean;
 }
 
 /**
@@ -205,10 +211,23 @@ export interface SetMetadataOptions extends CalibreOptions {
   /**
    * Field to update
    */
-  field: string;
-  
-  /**
-   * New value for the field
-   */
-  value: string;
+  field: Field;
 }
+
+// TODO: 
+// export
+// catalog
+// saved_searches
+// add_custom_column
+// custom_columns
+// remove_custom_column
+// set_custom
+// restore_database
+// check_library
+// list_categories
+// backup_metadata
+// clone
+// embed_metadata
+// search
+// fts_index
+// fts_search
