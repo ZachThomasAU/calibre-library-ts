@@ -78,7 +78,7 @@ export async function execCalibreJson<T>(
   
   try {
     return JSON.parse(output) as T;
-  } catch (error) {
+  } catch (_error) {
     throw new CalibreError(
       `Failed to parse JSON output from calibredb ${command}`,
       command,
