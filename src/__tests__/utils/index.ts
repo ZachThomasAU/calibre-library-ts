@@ -73,115 +73,32 @@ beforeEach(async () => {
 });
 
 /**
- * Creates a minimal valid EPUB file for testing
+ * Creates a simplified test book that Calibre can import
+ * This is much faster than creating full EPUB structure
  * 
- * @param dir Directory to create the EPUB in
- * @param filename Filename for the EPUB (without extension)
- * @returns Promise resolving to the path of the created EPUB
+ * @param dir Directory to create the HTML file in
+ * @param filename Filename for the HTML (without extension)
+ * @returns Promise resolving to the path of the created HTML file
  */
-export async function createMinimalEpub(dir: string, filename: string): Promise<string> {
-  const epubPath = path.join(dir, `${filename}.epub`);
+export async function createMinimalBook(dir: string, filename: string): Promise<string> {
+  const htmlPath = path.join(dir, `${filename}.html`);
   
-  // Create a minimal OPF file structure in a temporary directory
-  const epubContentDir = path.join(dir, `${filename}-content`);
-  await fs.mkdir(epubContentDir, { recursive: true });
-  
-  // Create META-INF directory and container.xml
-  const metaInfDir = path.join(epubContentDir, "META-INF");
-  await fs.mkdir(metaInfDir, { recursive: true });
-  
-  const containerXml = `<?xml version="1.0" encoding="UTF-8"?>
-<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
-  <rootfiles>
-    <rootfile full-path="content.opf" media-type="application/oebps-package+xml"/>
-  </rootfiles>
-</container>`;
-  
-  await fs.writeFile(path.join(metaInfDir, "container.xml"), containerXml);
-  
-  // Create mimetype file
-  await fs.writeFile(path.join(epubContentDir, "mimetype"), "application/epub+zip");
-  
-  // Create content.opf file
-  const contentOpf = `<?xml version="1.0" encoding="UTF-8"?>
-<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="BookId">
-  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
-    <dc:title>${filename}</dc:title>
-    <dc:creator>Test Author</dc:creator>
-    <dc:language>en</dc:language>
-    <dc:identifier id="BookId">urn:uuid:${generateUUID()}</dc:identifier>
-  </metadata>
-  <manifest>
-    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
-    <item id="content" href="content.html" media-type="application/xhtml+xml"/>
-  </manifest>
-  <spine toc="ncx">
-    <itemref idref="content"/>
-  </spine>
-</package>`;
-  
-  await fs.writeFile(path.join(epubContentDir, "content.opf"), contentOpf);
-  
-  // Create toc.ncx file
-  const tocNcx = `<?xml version="1.0" encoding="UTF-8"?>
-<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
-  <head>
-    <meta name="dtb:uid" content="urn:uuid:${generateUUID()}"/>
-    <meta name="dtb:depth" content="1"/>
-    <meta name="dtb:totalPageCount" content="0"/>
-    <meta name="dtb:maxPageNumber" content="0"/>
-  </head>
-  <docTitle>
-    <text>${filename}</text>
-  </docTitle>
-  <navMap>
-    <navPoint id="navpoint-1" playOrder="1">
-      <navLabel>
-        <text>Start</text>
-      </navLabel>
-      <content src="content.html"/>
-    </navPoint>
-  </navMap>
-</ncx>`;
-  
-  await fs.writeFile(path.join(epubContentDir, "toc.ncx"), tocNcx);
-  
-  // Create content.html file
-  const contentHtml = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+  // Create a simple HTML file that Calibre can import
+  const content = `<!DOCTYPE html>
+<html>
 <head>
   <title>${filename}</title>
+  <meta charset="utf-8"/>
 </head>
 <body>
   <h1>${filename}</h1>
   <p>This is a test book for calibredb-ts integration tests.</p>
+  <p>Author: Test Author</p>
 </body>
 </html>`;
   
-  await fs.writeFile(path.join(epubContentDir, "content.html"), contentHtml);
-  
-  // Create the EPUB file using zip
-  try {
-    // Save the current directory
-    const currentDir = process.cwd();
-    
-    // Change to the content directory
-    process.chdir(epubContentDir);
-    
-    // Create the mimetype file first without compression
-    await execa("zip", ["-X0", epubPath, "mimetype"]);
-    
-    // Add the rest of the files with compression
-    await execa("zip", ["-Xr9D", epubPath, "*", "-x", "mimetype"]);
-    
-    // Restore the current directory
-    process.chdir(currentDir);
-    
-    return epubPath;
-  } catch (error) {
-    throw new Error(`Failed to create EPUB file: ${error}`);
-  }
+  await fs.writeFile(htmlPath, content, "utf8");
+  return htmlPath;
 }
 
 /**
@@ -204,19 +121,6 @@ export async function cleanupTempDir(dir: string): Promise<void> {
 }
 
 /**
- * Generates a UUID v4
- * 
- * @returns A random UUID v4 string
- */
-function generateUUID(): string {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = Math.random() * 16 | 0;
-    const v = c === "x" ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
-
-/**
  * Creates multiple EPUB files for testing
  * 
  * @param dir Directory to create the EPUBs in
@@ -224,7 +128,7 @@ function generateUUID(): string {
  * @param prefix Prefix for the EPUB filenames
  * @returns Promise resolving to an array of paths to the created EPUBs
  */
-export async function createMultipleEpubs(
+export async function createMultipleBooks(
   dir: string, 
   count: number, 
   prefix = "test-book"
@@ -233,11 +137,28 @@ export async function createMultipleEpubs(
   
   for (let i = 1; i <= count; i++) {
     const filename = `${prefix}-${i}`;
-    const epubPath = await createMinimalEpub(dir, filename);
+    const epubPath = await createMinimalBook(dir, filename);
     paths.push(epubPath);
   }
   
   return paths;
+}
+
+/**
+ * Adds multiple books to the library in a single command
+ * 
+ * @param libraryPath Path to the Calibre library
+ * @param bookPaths Array of paths to the books to add
+ * @returns Promise resolving when the books are added
+ */
+export async function addBooksToLibrary(
+  libraryPath: string,
+  bookPaths: string[]
+): Promise<void> {
+  if (bookPaths.length === 0) return;
+  
+  // Add all books in a single command
+  await execa("calibredb", ["--library-path", libraryPath, "add", ...bookPaths]);
 }
 
 /**

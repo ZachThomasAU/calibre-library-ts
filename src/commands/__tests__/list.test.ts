@@ -5,8 +5,10 @@ import calibredb from "../../index";
 import {
   getLibraryPath,
   createTempDir,
-  createMultipleEpubs,
-  cleanupTempDir
+  createMultipleBooks,
+  cleanupTempDir,
+  addBooksToLibrary,
+  createMinimalBook
 } from "../../__tests__/utils";
 
 describe("list command", () => {
@@ -38,12 +40,8 @@ describe("list command", () => {
     const libraryPath = getLibraryPath();
     
     // Create test books
-    const epubPaths = await createMultipleEpubs(booksDir, 3);
-    
-    // Add books to the library
-    for (const epubPath of epubPaths) {
-      await execa("calibredb", ["--library-path", libraryPath, "add", epubPath]);
-    }
+    const bookPaths = await createMultipleBooks(booksDir, 3);
+    await addBooksToLibrary(libraryPath, bookPaths);
     
     // List all books
     const books = await calibredb.list({ libraryPath });
@@ -59,15 +57,11 @@ describe("list command", () => {
     const libraryPath = getLibraryPath();
     
     // Create test books with specific titles
-    const epubPaths = [
-      await createMultipleEpubs(booksDir, 1, "romance"),
-      await createMultipleEpubs(booksDir, 1, "mystery")
-    ].flat();
-    
-    // Add books to the library
-    for (const epubPath of epubPaths) {
-      await execa("calibredb", ["--library-path", libraryPath, "add", epubPath]);
-    }
+    const bookPaths = [
+      await createMinimalBook(booksDir, "romance"),
+      await createMinimalBook(booksDir, "mystery")
+    ];
+    await addBooksToLibrary(libraryPath, bookPaths);
     
     // Search for books with "romance" in the title
     const romanceBooks = await calibredb.search("title:romance", { libraryPath });
@@ -91,10 +85,8 @@ describe("list command", () => {
     const libraryPath = getLibraryPath();
     
     // Create test books
-    const epubPaths = await createMultipleEpubs(booksDir, 1);
-    
-    // Add book to the library
-    await execa("calibredb", ["--library-path", libraryPath, "add", epubPaths[0]]);
+    const bookPaths = await createMultipleBooks(booksDir, 1);
+    await addBooksToLibrary(libraryPath, bookPaths);
     
     // List books with specific fields
     const books = await calibredb.list({
@@ -119,15 +111,15 @@ describe("list command", () => {
     
     // Create test books with alphabetical titles
     const prefixes = ["A-Book", "B-Book", "C-Book"];
-    const epubPaths: string[][] = [];
+    const bookPaths: string[][] = [];
     
     for (const prefix of prefixes) {
-      epubPaths.push(await createMultipleEpubs(booksDir, 1, prefix));
+      bookPaths.push(await createMultipleBooks(booksDir, 1, prefix));
     }
     
     // Add books to the library
-    for (const epubPath of epubPaths.flat()) {
-      await execa("calibredb", ["--library-path", libraryPath, "add", epubPath]);
+    for (const bookPath of bookPaths.flat()) {
+      await execa("calibredb", ["--library-path", libraryPath, "add", bookPath]);
     }
     
     // List books sorted by title in ascending order
@@ -161,12 +153,8 @@ describe("list command", () => {
     const libraryPath = getLibraryPath();
     
     // Create multiple test books
-    const epubPaths = await createMultipleEpubs(booksDir, 5);
-    
-    // Add books to the library
-    for (const epubPath of epubPaths) {
-      await execa("calibredb", ["--library-path", libraryPath, "add", epubPath]);
-    }
+    const bookPaths = await createMultipleBooks(booksDir, 5);
+    await addBooksToLibrary(libraryPath, bookPaths);
     
     // List books with a limit
     const limitedBooks = await calibredb.list({
@@ -188,12 +176,12 @@ describe("list command", () => {
     const libraryPath = getLibraryPath();
     
     // Create test book
-    const epubPath = await createMultipleEpubs(booksDir, 1, "author-test");
+    const bookPath = await createMultipleBooks(booksDir, 1, "author-test");
     
     // Add book with custom author
     await execa("calibredb", [
       "--library-path", libraryPath, 
-      "add", epubPath[0], 
+      "add", bookPath[0], 
       "--author", "Jane Doe"
     ]);
     
