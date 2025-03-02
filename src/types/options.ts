@@ -1,4 +1,4 @@
-type Field = "author_sort" | "authors" | "comments" | "cover" | "formats"
+type Field = "id" | "author_sort" | "authors" | "comments" | "cover" | "formats"
   | "identifiers" | "isbn" | "languages" | "last_modified" | "pubdate"
   | "publisher" | "rating" | "series" | "series_index" | "size" | "tags"
   | "template" | "timestamp" | "title" | "uuid" | "all"

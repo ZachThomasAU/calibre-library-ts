@@ -16,7 +16,7 @@ let globalTempDir: string;
  */
 beforeAll(async () => {
   // Create a global temp directory
-  globalTempDir = await fs.mkdtemp(path.join(os.tmpdir(), "calibredb-ts-global-"));
+  globalTempDir = await fs.mkdtemp(path.join(os.tmpdir(), "calibre-library-ts-global-"));
   globalLibraryPath = path.join(globalTempDir, "library");
   
   // Create the library
@@ -92,7 +92,7 @@ export async function createMinimalBook(dir: string, filename: string): Promise<
 </head>
 <body>
   <h1>${filename}</h1>
-  <p>This is a test book for calibredb-ts integration tests.</p>
+  <p>This is a test book for calibre-library-ts integration tests.</p>
   <p>Author: Test Author</p>
 </body>
 </html>`;
@@ -107,7 +107,7 @@ export async function createMinimalBook(dir: string, filename: string): Promise<
  * @returns Promise resolving to the path of the temporary directory
  */
 export async function createTempDir(): Promise<string> {
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "calibredb-ts-files-"));
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "calibre-library-ts-files-"));
   return tempDir;
 }
 

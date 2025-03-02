@@ -1,6 +1,6 @@
-# Testing calibredb-ts
+# Testing calibre-library-ts
 
-The integration tests for `calibredb-ts` focus on verifying that the wrapper correctly interfaces with the actual `calibredb` command-line tool. The tests are designed to be:
+The integration tests for `calibre-library-ts` focus on verifying that the wrapper correctly interfaces with the actual `calibredb` command-line tool. The tests are designed to be:
 
 1. **Isolated**: Each test runs in its own temporary Calibre library
 2. **Self-contained**: Tests generate their own test data (EPUB files)

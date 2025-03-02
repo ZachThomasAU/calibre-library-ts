@@ -1,6 +1,6 @@
-# calibredb-ts
+# calibre-library-ts
 
-A fully-typed TypeScript wrapper for the [Calibre](https://calibre-ebook.com/) command-line tool (`calibredb`). This library allows Node.js applications to interact with Calibre libraries programmatically.
+A fully-typed TypeScript wrapper for the [Calibre](https://calibre-ebook.com/) command-line tool (`calibredb`). This library allows Node.js applications to interact with a Calibre library programmatically.
 
 ## Features
 
@@ -16,13 +16,13 @@ A fully-typed TypeScript wrapper for the [Calibre](https://calibre-ebook.com/) c
 
 ```bash
 # npm
-npm install calibredb
+npm install calibre-library
 
 # pnpm
-pnpm add calibredb
+pnpm add calibre-library
 
 # yarn
-yarn add calibredb
+yarn add calibre-library
 ```
 
 ## Prerequisites
@@ -35,7 +35,7 @@ yarn add calibredb
 ### Basic usage
 
 ```typescript
-import db from 'calibredb';
+import db from 'calibre-library';
 
 // List all books in the default library
 const books = await db.listAll();
@@ -56,7 +56,7 @@ await db.removeBook(123);
 ### Working with a specific library
 
 ```typescript
-import db from 'calibredb';
+import db from 'calibre-library';
 
 // Define library path
 const libraryPath = '/path/to/calibre/library';
@@ -77,7 +77,7 @@ const bookId = await db.addBook('/path/to/book.epub', {
 ### Advanced search
 
 ```typescript
-import db from 'calibredb';
+import db from 'calibre-library';
 
 // Search for books published after 2020 with "programming" in the title
 const recentProgrammingBooks = await db.search(
@@ -94,7 +94,7 @@ const potterBooks = await db.getBooksBySeries('Harry Potter');
 ### Error handling
 
 ```typescript
-import db, { BookNotFoundError, LibraryNotFoundError } from 'calibredb';
+import db, { BookNotFoundError, LibraryNotFoundError } from 'calibre-library';
 
 try {
   await db.removeBook(999999);
@@ -180,10 +180,6 @@ Removes a single book by ID.
 #### `removePermanently(bookIds: number[], options?: Omit<RemoveOptions, "permanent">): Promise<void>`
 
 Permanently removes books (including files).
-
-#### `removeBySearch(searchExpression: string, options?: RemoveOptions): Promise<void>`
-
-Removes books matching the search expression.
 
 ## Contributing
 

@@ -1,8 +1,8 @@
 {
-  "name": "calibredb",
+  "name": "calibre-library",
   "version": "0.1.0",
   "type": "module",
-  "description": "TypeScript wrapper for the Calibre command-line tool",
+  "description": "TypeScript API to programmatically interact with your Calibre E-book Library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -20,9 +20,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ZachThomasAU/calibredb-ts.git"
+    "url": "https://github.com/ZachThomasAU/calibre-library-ts.git"
   },
-  "bugs": "https://github.com/ZachThomasAU/calibredb-ts/issues",
+  "bugs": "https://github.com/ZachThomasAU/calibre-library-ts/issues",
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "lint": "pnpm dlx eslint src/",
