@@ -74,7 +74,7 @@ describe("add command", () => {
     const bookId = await calibredb.addBook(bookPath, {
       libraryPath,
       title: "Custom Title",
-      author: "Custom Author",
+      authors: ["Custom Author"], // TODO: Test with multiple authors
       tags: ["Test", "Metadata"]
     });
     
@@ -102,7 +102,7 @@ describe("add command", () => {
     const bookId = await calibredb.addEmptyBook({
       libraryPath,
       title: "Empty Book",
-      author: "Nobody",
+      authors: ["Nobody"],
       tags: ["Empty"]
     });
     
@@ -131,7 +131,7 @@ describe("add command", () => {
     // Try to add an empty book without a title
     await expect(calibredb.addEmptyBook({
       libraryPath,
-      author: "Nobody"
+      authors: ["Nobody"]
     })).rejects.toThrow("Title is required for an empty book");
   });
 

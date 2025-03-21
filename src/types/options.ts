@@ -9,7 +9,8 @@ type Field = "id" | "author_sort" | "authors" | "comments" | "cover" | "formats"
 export interface CalibreOptions {
   /**
    * Path to the Calibre library
-   * If not provided, calibredb will use the default configured library
+   * 
+   * If not provided, calibredb will use the default configured library.
    */
   libraryPath?: string;
   
@@ -24,13 +25,13 @@ export interface CalibreOptions {
    * @default false
    */
   stream?: boolean;
-  
-  /**
-   * Whether to log commands being executed to console
-   * Useful for debugging
-   * @default false
-   */
-  debug?: boolean;
+
+  // TODO: Add remote content server options. Probably take an object with:
+  //   - hostname
+  //   - port
+  //   - library_id
+  //   - username
+  //   - password
 }
 
 /**
@@ -45,21 +46,22 @@ export interface ListOptions extends CalibreOptions {
   fields?: Field[];
   
   /**
-   * Field to sort by
+   * Search expression to filter books
    */
-  sortBy?: string | string[];
+  search?: string;
+  
+  /**
+   * Field to sort 
+   * @default "id"
+   */
+  sortBy?: Field | Field[];
   
   /**
    * Ascending (ASC) or descending (DESC) sort order
    * @default "DESC"
    */
   sortOrder?: "ASC" | "DESC";
-  
-  /**
-   * Search expression to filter books
-   */
-  search?: string;
-  
+
   /**
    * Maximum number of books to return
    */
@@ -106,9 +108,9 @@ export interface AddOptions extends CalibreOptions {
   title?: string;
   
   /**
-   * Author string to use for all added books
+   * List of authors to use for all added books.
    */
-  author?: string;
+  authors?: string[];
 
   /**
    * ISBN string to use for all added books
