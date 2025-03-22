@@ -54,7 +54,7 @@ describe("add command", () => {
     const bookId = await calibredb.addBook(bookPath, {
       libraryPath,
       title: "Custom Title",
-      authors: ["Custom Author"], // TODO: Test with multiple authors
+      authors: ["Author One", "Author Two"],
       tags: ["Test", "Metadata"],
       isbn: "9781451669411",
       languages: ["eng", "fra"] // English and French
@@ -72,9 +72,9 @@ describe("add command", () => {
     // Verify the metadata
     expect(book).not.toBeNull();
     expect(book?.title).toBe("Custom Title");
-    expect(book?.authors).toContain("Custom Author");
-    expect(book?.tags).toContain("Test");
-    expect(book?.tags).toContain("Metadata");
+    expect(book?.authors).contain("Author One");
+    expect(book?.authors).contain("Author Two");
+    expect(book?.tags).toEqual(expect.arrayContaining(["Test", "Metadata"]));
     expect(book.identifiers).toHaveProperty("isbn", "9781451669411");
     expect(book?.languages).toEqual(expect.arrayContaining(["eng", "fra"]));
   });
