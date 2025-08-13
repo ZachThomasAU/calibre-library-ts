@@ -108,9 +108,9 @@ export interface Book {
   title: string;
   
   /**
-   * The list of authors
+   * The list of authors separated by '&' characters.
    */
-  authors: string[];
+  authors: string;
   
   /**
    * The book's primary author

@@ -76,29 +76,22 @@ beforeEach(async () => {
  * Creates a simplified test book that Calibre can import
  * This is much faster than creating full EPUB structure
  * 
- * @param dir Directory to create the HTML file in
- * @param filename Filename for the HTML (without extension)
- * @returns Promise resolving to the path of the created HTML file
+ * @param directory - Directory to create the book in
+ * @param prefix - Prefix for the book name
+ * @param format - Format to create (epub, pdf, etc.)
+ * @returns Path to the created book file
  */
-export async function createMinimalBook(dir: string, filename: string): Promise<string> {
-  const htmlPath = path.join(dir, `${filename}.html`);
+export async function createMinimalBook(
+  directory: string,
+  prefix: string = "test-book",
+  format: string = "epub"
+): Promise<string> {
+  // Create a minimal file with the correct extension
+  const filePath = path.join(directory, `${prefix}.${format.toLowerCase()}`);
+  const content = `TESTBOOK:${prefix}\nTESTAUTHOR:Test Author`;
   
-  // Create a simple HTML file that Calibre can import
-  const content = `<!DOCTYPE html>
-<html>
-<head>
-  <title>${filename}</title>
-  <meta charset="utf-8"/>
-</head>
-<body>
-  <h1>${filename}</h1>
-  <p>This is a test book for calibre-library-ts integration tests.</p>
-  <p>Author: Test Author</p>
-</body>
-</html>`;
-  
-  await fs.writeFile(htmlPath, content, "utf8");
-  return htmlPath;
+  await fs.writeFile(filePath, content);
+  return filePath;
 }
 
 /**

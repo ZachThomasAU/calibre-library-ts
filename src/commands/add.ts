@@ -35,8 +35,8 @@ export async function add(
     args.push("--empty");
   }
   
-  if (options.author) {
-    args.push("--author", options.author);
+  if (options.authors) {
+    args.push("--authors", options.authors.join("& "));
   }
   
   if (options.title) {
